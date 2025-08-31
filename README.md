@@ -46,7 +46,7 @@ npm run preview -- --port 3001 --strictPort
 ```
 
 * Runs on: [http://localhost:3001](http://localhost:3001)
-* Exposes: `dist/assets/remoteEntry.js`
+* Exposes: `localhost:3001/assets/remoteEntry.js`
 
 ---
 
