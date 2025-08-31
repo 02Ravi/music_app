@@ -46,7 +46,7 @@ const Login = () => {
           </button>
         </form>
 
-        <div className="bg-gray-50 rounded-md p-4 text-sm">
+        {/* <div className="bg-gray-50 rounded-md p-4 text-sm">
           <h3 className="font-semibold mb-2 text-center">Demo Credentials</h3>
           <div className="mb-1">
             <strong>Admin:</strong> admin / admin123
@@ -54,7 +54,7 @@ const Login = () => {
           <div>
             <strong>User:</strong> user / user123
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
