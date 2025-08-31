@@ -44,12 +44,7 @@ const AppContent = () => {
               Welcome, <strong className="font-semibold">{user.username}</strong>
             </span>
 
-            {/* Show role badge only for admins
-            {user.role === 'admin' && (
-              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">
-                Admin
-              </span>
-            )} */}
+          
 
             <button
               onClick={logout}

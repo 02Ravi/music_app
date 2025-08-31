@@ -10,7 +10,7 @@ const wrap = (cls = "") => `max-w-6xl mx-auto p-6 font-sans ${cls}`;
 export default function MusicLibrary({ userRole = "user" }) {
   const [songs, setSongs] = useState(initialSongs);
 
-  // Keep filters as strings; "" = no filter
+
   const [filters, setFilters] = useState({ title: "", artist: "", album: "" });
   const [sortBy, setSortBy] = useState("title");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -19,11 +19,11 @@ export default function MusicLibrary({ userRole = "user" }) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newSong, setNewSong] = useState({ title: "", artist: "", album: "" });
 
-  // Unique values with reduce
+
   const uniqueOf = (key) =>
     [...songs.reduce((acc, s) => (s[key] ? acc.add(s[key]) : acc), new Set())];
 
-  // Filter + Sort
+
   const filteredAndSorted = useMemo(() => {
     const filt = songs.filter((s) => {
       const t = s.title?.toLowerCase() || "";
@@ -47,7 +47,7 @@ export default function MusicLibrary({ userRole = "user" }) {
     return sorted;
   }, [songs, filters, sortBy, sortOrder]);
 
-  // Grouping
+
   const grouped = useMemo(() => {
     if (groupBy === "none") return { "All Songs": filteredAndSorted };
     return filteredAndSorted.reduce((acc, s) => {
@@ -70,7 +70,7 @@ export default function MusicLibrary({ userRole = "user" }) {
 
   return (
     <div className={wrap()}>
-      {/* Header */}
+     
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
         <h2 className="text-2xl font-semibold ">Music Library</h2>
         <span
@@ -83,9 +83,9 @@ export default function MusicLibrary({ userRole = "user" }) {
         </span>
       </div>
 
-      {/* Controls */}
+    
       <div className="flex flex-wrap items-center gap-3 mb-5 p-4 bg-gray-50 rounded-xl border border-gray-200">
-        {/* Filters */}
+       
         <Input
           placeholder="Filter by title"
           value={filters.title}
@@ -93,7 +93,6 @@ export default function MusicLibrary({ userRole = "user" }) {
           className="min-w-[200px]"
         />
 
-        {/* Artist filter (fixed: explicit 'All Artists' option + onClear) */}
         <Select
           value={filters.artist}
           onChange={(v) => setFilters((p) => ({ ...p, artist: v }))}
@@ -110,7 +109,6 @@ export default function MusicLibrary({ userRole = "user" }) {
           ))}
         </Select>
 
-        {/* Album filter (fixed: explicit 'All Albums' option + onClear) */}
         <Select
           value={filters.album}
           onChange={(v) => setFilters((p) => ({ ...p, album: v }))}
@@ -127,7 +125,6 @@ export default function MusicLibrary({ userRole = "user" }) {
           ))}
         </Select>
 
-        {/* Sort */}
         <Select value={sortBy} onChange={setSortBy} className="min-w-[180px] ml-auto">
           <Option value="title">Sort by Title</Option>
           <Option value="artist">Sort by Artist</Option>
@@ -137,7 +134,6 @@ export default function MusicLibrary({ userRole = "user" }) {
           {sortOrder === "asc" ? "Asc" : "Desc"}
         </Button>
 
-        {/* Group */}
         <Select value={groupBy} onChange={setGroupBy} className="min-w-[180px]">
           <Option value="none">No Grouping</Option>
           <Option value="artist">Group by Artist</Option>
@@ -145,7 +141,6 @@ export default function MusicLibrary({ userRole = "user" }) {
           <Option value="title">Group by Title</Option>
         </Select>
 
-        {/* Admin: Add toggle */}
         {userRole === "admin" && (
           <Button type="primary" className="ml-auto" onClick={() => setShowAddForm((s) => !s)}>
             {showAddForm ? "Cancel" : "Add Song"}
@@ -153,7 +148,6 @@ export default function MusicLibrary({ userRole = "user" }) {
         )}
       </div>
 
-      {/* Add Song (Admin only) */}
       {userRole === "admin" && showAddForm && (
         <form
           onSubmit={handleAddSong}
@@ -186,7 +180,6 @@ export default function MusicLibrary({ userRole = "user" }) {
         </form>
       )}
 
-      {/* Songs */}
       <div className="space-y-7">
         {Object.entries(grouped).map(([groupName, groupSongs]) => (
           <div key={groupName}>
