@@ -74,7 +74,6 @@ Both apps are deployed independently.
 * Root folder: `music-library/`
 * Framework preset: **Vite**
 * Build command: `npm run build`
-* Output directory: `dist`
 * Deployed at: `https://music-app-murex-delta.vercel.app`
 
 ### Main App
