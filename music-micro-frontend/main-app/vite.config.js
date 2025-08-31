@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import federation from '@originjs/vite-plugin-federation'
 
 export default defineConfig(({ mode }) => {
-  // read env var from .env files or Vercel dashboard
+
   const musicLibraryUrl =
     process.env.MUSIC_LIBRARY_URL || 'http://localhost:3001/assets/remoteEntry.js'
 
