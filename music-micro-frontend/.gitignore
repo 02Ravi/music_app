@@ -1,0 +1,33 @@
+# Node dependencies (covers both main-app/ and music-library/)
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Local env files
+.env
+.env.local
+.env.*.local
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Cache / Misc
+.cache/
+*.tsbuildinfo
+vite.config.ts.timestamp-*
