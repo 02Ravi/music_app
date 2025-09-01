@@ -2,7 +2,6 @@ import React, { useState, useMemo } from "react";
 import { Select, Input, Button, Card } from "antd";
 import { initialSongs } from "./musicData";
 
-
 const { Option } = Select;
 
 const wrap = (cls = "") => `max-w-6xl mx-auto p-6 font-sans ${cls}`;
@@ -10,8 +9,11 @@ const wrap = (cls = "") => `max-w-6xl mx-auto p-6 font-sans ${cls}`;
 export default function MusicLibrary({ userRole = "user" }) {
   const [songs, setSongs] = useState(initialSongs);
 
-
-  const [filters, setFilters] = useState({ title: "", artist: "", album: "" });
+  const [filters, setFilters] = useState({
+    title: "",
+    artist: "All Artists",
+    album: "All Albums",
+  });
   const [sortBy, setSortBy] = useState("title");
   const [sortOrder, setSortOrder] = useState("asc");
   const [groupBy, setGroupBy] = useState("none");
@@ -19,10 +21,7 @@ export default function MusicLibrary({ userRole = "user" }) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newSong, setNewSong] = useState({ title: "", artist: "", album: "" });
 
-
-  const uniqueOf = (key) =>
-    [...songs.reduce((acc, s) => (s[key] ? acc.add(s[key]) : acc), new Set())];
-
+  const uniqueOf = (key) => [...new Set(songs.map((s) => s[key]).filter(Boolean))];
 
   const filteredAndSorted = useMemo(() => {
     const filt = songs.filter((s) => {
@@ -31,29 +30,25 @@ export default function MusicLibrary({ userRole = "user" }) {
       const al = s.album?.toLowerCase() || "";
       return (
         t.includes(filters.title.toLowerCase()) &&
-        a.includes(filters.artist.toLowerCase()) &&
-        al.includes(filters.album.toLowerCase())
+        (filters.artist === "All Artists" || a === filters.artist.toLowerCase()) &&
+        (filters.album === "All Albums" || al === filters.album.toLowerCase())
       );
     });
 
-    const sorted = [...filt].sort((a, b) => {
+    return [...filt].sort((a, b) => {
       const av = (a[sortBy] ?? "").toString().toLowerCase();
       const bv = (b[sortBy] ?? "").toString().toLowerCase();
       if (av < bv) return sortOrder === "asc" ? -1 : 1;
       if (av > bv) return sortOrder === "asc" ? 1 : -1;
       return 0;
     });
-
-    return sorted;
   }, [songs, filters, sortBy, sortOrder]);
-
 
   const grouped = useMemo(() => {
     if (groupBy === "none") return { "All Songs": filteredAndSorted };
     return filteredAndSorted.reduce((acc, s) => {
       const key = s[groupBy] || "Unknown";
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(s);
+      (acc[key] = acc[key] || []).push(s);
       return acc;
     }, {});
   }, [filteredAndSorted, groupBy]);
@@ -61,47 +56,46 @@ export default function MusicLibrary({ userRole = "user" }) {
   const handleAddSong = (e) => {
     e.preventDefault();
     const id = (songs.length ? Math.max(...songs.map((s) => s.id)) : 0) + 1;
-    setSongs((prev) => [...prev, { ...newSong, id }]);
+    setSongs([...songs, { ...newSong, id }]);
     setNewSong({ title: "", artist: "", album: "" });
     setShowAddForm(false);
   };
 
-  const handleDeleteSong = (id) => setSongs((prev) => prev.filter((s) => s.id !== id));
+  const handleDeleteSong = (id) =>
+    setSongs(songs.filter((s) => s.id !== id));
 
   return (
     <div className={wrap()}>
-     
+      {/* Header */}
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
-        <h2 className="text-2xl font-semibold ">Music Library</h2>
+        <h2 className="text-2xl font-semibold">Music Library</h2>
         <span
           className={[
             "px-3 py-1 rounded-full text-xs font-semibold",
-            userRole === "admin" ? "bg-indigo-600 text-white" : "bg-gray-900 text-white",
+            userRole === "admin"
+              ? "bg-indigo-600 text-white"
+              : "bg-gray-900 text-white",
           ].join(" ")}
         >
           {userRole === "admin" ? "Admin" : "User"}
         </span>
       </div>
 
-    
+      {/* Controls */}
       <div className="flex flex-wrap items-center gap-3 mb-5 p-4 bg-gray-50 rounded-xl border border-gray-200">
-       
         <Input
           placeholder="Filter by title"
           value={filters.title}
-          onChange={(e) => setFilters((p) => ({ ...p, title: e.target.value }))}
+          onChange={(e) => setFilters({ ...filters, title: e.target.value })}
           className="min-w-[200px]"
         />
 
         <Select
           value={filters.artist}
-          onChange={(v) => setFilters((p) => ({ ...p, artist: v }))}
-          onClear={() => setFilters((p) => ({ ...p, artist: "" }))}
+          onChange={(v) => setFilters({ ...filters, artist: v })}
           className="min-w-[180px]"
-          placeholder="All Artists"
-          allowClear
         >
-          <Option value="">All Artists</Option>
+          <Option value="All Artists">All Artists</Option>
           {uniqueOf("artist").map((v) => (
             <Option key={v} value={v}>
               {v}
@@ -111,13 +105,10 @@ export default function MusicLibrary({ userRole = "user" }) {
 
         <Select
           value={filters.album}
-          onChange={(v) => setFilters((p) => ({ ...p, album: v }))}
-          onClear={() => setFilters((p) => ({ ...p, album: "" }))}
+          onChange={(v) => setFilters({ ...filters, album: v })}
           className="min-w-[180px]"
-          placeholder="All Albums"
-          allowClear
         >
-          <Option value="">All Albums</Option>
+          <Option value="All Albums">All Albums</Option>
           {uniqueOf("album").map((v) => (
             <Option key={v} value={v}>
               {v}
@@ -125,12 +116,17 @@ export default function MusicLibrary({ userRole = "user" }) {
           ))}
         </Select>
 
-        <Select value={sortBy} onChange={setSortBy} className="min-w-[180px] ml-auto">
+        <Select
+          value={sortBy}
+          onChange={setSortBy}
+          className="min-w-[180px] ml-auto"
+        >
           <Option value="title">Sort by Title</Option>
           <Option value="artist">Sort by Artist</Option>
           <Option value="album">Sort by Album</Option>
         </Select>
-        <Button onClick={() => setSortOrder((o) => (o === "asc" ? "desc" : "asc"))}>
+
+        <Button onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}>
           {sortOrder === "asc" ? "Asc" : "Desc"}
         </Button>
 
@@ -142,12 +138,13 @@ export default function MusicLibrary({ userRole = "user" }) {
         </Select>
 
         {userRole === "admin" && (
-          <Button type="primary" className="ml-auto" onClick={() => setShowAddForm((s) => !s)}>
+          <Button type="primary" className="ml-auto" onClick={() => setShowAddForm(!showAddForm)}>
             {showAddForm ? "Cancel" : "Add Song"}
           </Button>
         )}
       </div>
 
+      {/* Add Form */}
       {userRole === "admin" && showAddForm && (
         <form
           onSubmit={handleAddSong}
@@ -156,21 +153,21 @@ export default function MusicLibrary({ userRole = "user" }) {
           <Input
             placeholder="Title"
             value={newSong.title}
-            onChange={(e) => setNewSong((p) => ({ ...p, title: e.target.value }))}
+            onChange={(e) => setNewSong({ ...newSong, title: e.target.value })}
             className="min-w-[160px]"
             required
           />
           <Input
             placeholder="Artist"
             value={newSong.artist}
-            onChange={(e) => setNewSong((p) => ({ ...p, artist: e.target.value }))}
+            onChange={(e) => setNewSong({ ...newSong, artist: e.target.value })}
             className="min-w-[160px]"
             required
           />
           <Input
             placeholder="Album"
             value={newSong.album}
-            onChange={(e) => setNewSong((p) => ({ ...p, album: e.target.value }))}
+            onChange={(e) => setNewSong({ ...newSong, album: e.target.value })}
             className="min-w-[160px]"
             required
           />
@@ -180,6 +177,7 @@ export default function MusicLibrary({ userRole = "user" }) {
         </form>
       )}
 
+      {/* Songs */}
       <div className="space-y-7">
         {Object.entries(grouped).map(([groupName, groupSongs]) => (
           <div key={groupName}>
@@ -202,12 +200,7 @@ export default function MusicLibrary({ userRole = "user" }) {
                         <p className="text-gray-500 italic">{song.album}</p>
                       </div>
                       {userRole === "admin" && (
-                        <Button
-                          danger
-                          type="text"
-                          onClick={() => handleDeleteSong(song.id)}
-                          aria-label={`Delete ${song.title}`}
-                        >
+                        <Button danger type="text" onClick={() => handleDeleteSong(song.id)} aria-label={`Delete ${song.title}`}>
                           Delete
                         </Button>
                       )}
