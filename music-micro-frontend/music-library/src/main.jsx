@@ -5,5 +5,5 @@ import MusicLibrary from './MusicLibrary'
 
 const root = document.getElementById('root')
 if (root) {
-  ReactDOM.createRoot(root).render(<MusicLibrary userRole="admin" />)
+  ReactDOM.createRoot(root).render(<MusicLibrary userRole="user" />)
 }
